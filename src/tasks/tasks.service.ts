@@ -1,3 +1,4 @@
+// src/tasks/tasks.service.ts
 import { Injectable, NotFoundException, ForbiddenException, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreateTaskDto, UpdateTaskDto } from './dto/task.dto';
@@ -18,6 +19,7 @@ export class TasksService {
     }
 
     async findAll(user: any) {
+
         if (user.role === Role.ADMIN) {
             return this.prisma.task.findMany();
         }
@@ -27,6 +29,7 @@ export class TasksService {
     async findOne(id: number, user: any) {
         const task = await this.prisma.task.findUnique({ where: { id } });
         if (!task) throw new NotFoundException('Task not found');
+
 
         if (user.role !== Role.ADMIN && task.userId !== user.id) {
             throw new ForbiddenException('You do not have permission to view this task');

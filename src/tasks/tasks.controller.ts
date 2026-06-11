@@ -1,15 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, HttpCode, HttpStatus } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto, UpdateTaskDto } from './dto/task.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 @Controller('tasks')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class TasksController {
     constructor(private tasksService: TasksService) { }
 
     @Post()
+    @HttpCode(HttpStatus.CREATED)
     create(@Body() dto: CreateTaskDto, @Request() req) {
+
         return this.tasksService.create(dto, req.user.id);
     }
 
